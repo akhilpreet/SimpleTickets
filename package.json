@@ -1,7 +1,8 @@
 {
-  "name": "react",
+  "name": "Simple Tickets",
   "version": "1.0.0",
-  "description": "React example starter project",
+  "author": "Akhil Preet Singh",
+  "description": "A simple ticket management app",
   "keywords": [
     "react",
     "starter"
