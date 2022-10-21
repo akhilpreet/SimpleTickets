@@ -1,5 +1,5 @@
-import { useContext, useEffect, useState } from "react";
-import AppContext from "../context/appContext";
+import { useContext, useState } from 'react';
+import AppContext from '../context/appContext';
 
 const FloatingBtns = () => {
   const [confim, setConfirm] = useState(false);
@@ -17,7 +17,7 @@ const FloatingBtns = () => {
 
   return (
     <>
-      <div className={`blackScreen ${blank ? "animateBlackScreen" : ""}`} />
+      <div className={`blackScreen ${blank ? 'animateBlackScreen' : ''}`} />
       {context?.sessionId && (
         <div className="floatingContainer">
           {!confim && (

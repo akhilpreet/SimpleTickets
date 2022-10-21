@@ -1,18 +1,18 @@
-import { createContext, useEffect, useState } from "react";
-import initialData from "../columns";
-import { initializeApp } from "firebase/app";
-import { child, get, getDatabase, onValue, ref, set } from "firebase/database";
-import { updateColTickets } from "../utils/util";
+import { createContext, useEffect, useState } from 'react';
+import initialData from '../columns';
+import { initializeApp } from 'firebase/app';
+import { child, get, getDatabase, onValue, ref, set } from 'firebase/database';
+import { updateColTickets } from '../utils/util';
 
 const firebaseConfig = {
   apiKey: process.env.API_KEY,
-  authDomain: "ticketmanager-ae40a.firebaseapp.com",
+  authDomain: 'ticketmanager-ae40a.firebaseapp.com',
   databaseURL:
-    "https://ticketmanager-ae40a-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "ticketmanager-ae40a",
-  storageBucket: "ticketmanager-ae40a.appspot.com",
-  messagingSenderId: "792028758479",
-  appId: "1:792028758479:web:618cd63800c0cae3f6d2ba"
+    'https://ticketmanager-ae40a-default-rtdb.asia-southeast1.firebasedatabase.app',
+  projectId: 'ticketmanager-ae40a',
+  storageBucket: 'ticketmanager-ae40a.appspot.com',
+  messagingSenderId: '792028758479',
+  appId: '1:792028758479:web:618cd63800c0cae3f6d2ba',
 };
 
 const firebase = initializeApp(firebaseConfig);
@@ -24,11 +24,12 @@ const AppContext = createContext({
   loading: false,
   sessionId: null,
   addTicket: () => {},
+  editTicket: () => {},
   removeTicket: () => {},
   changeColumn: () => {},
   newSession: () => {},
   createSessionId: () => {},
-  removeSessionId: () => {}
+  removeSessionId: () => {},
 });
 
 export const AppContextProvider = (props) => {
@@ -38,9 +39,10 @@ export const AppContextProvider = (props) => {
   const [sessionId, setSessionId] = useState(null);
 
   useEffect(() => {
-    const currentSessionId = localStorage.getItem("sessionId");
+    const currentSessionId = localStorage.getItem('sessionId');
+    console.log('setting loading false');
     if (currentSessionId) {
-      console.log("setting lodaing true");
+      console.log('setting lodaing true');
 
       setLoading(true);
       setSessionId(currentSessionId);
@@ -50,12 +52,13 @@ export const AppContextProvider = (props) => {
 
   const createSessionId = (sessionId) => {
     setSessionId(sessionId);
-    localStorage.setItem("sessionId", sessionId);
+    console.log('set session id');
+    localStorage.setItem('sessionId', sessionId);
   };
 
   const removeSessionId = () => {
     setSessionId(null);
-    localStorage.removeItem("sessionId");
+    localStorage.removeItem('sessionId');
   };
 
   const getSession = (sessionId) => {
@@ -74,6 +77,7 @@ export const AppContextProvider = (props) => {
     setLoading(true);
     get(child(ref(database), `data/${sessionId}`))
       .then((snapshot) => {
+        console.log('got snapshot', snapshot, snapshot.exists());
         if (!snapshot.exists()) {
           set(ref(database, `data/${sessionId}`), initialData);
         }
@@ -91,7 +95,7 @@ export const AppContextProvider = (props) => {
     const nextTicket = `t${ticketsLength + 1}`;
     set(ref(database, `data/${sessionId}/tickets/${nextTicket}`), {
       title,
-      desc
+      desc,
     });
     const columnTicket = columns[columnId].tickets
       ? `${columns[columnId].tickets},${nextTicket}`
@@ -102,11 +106,18 @@ export const AppContextProvider = (props) => {
     );
   };
 
+  const editTicket = (title, desc, ticketId) => {
+    set(ref(database, `data/${sessionId}/tickets/${ticketId}`), {
+      title,
+      desc,
+    });
+  };
+
   const removeTicket = (columnId, ticketId) => {
     const tickets = columns[columnId]?.tickets;
-    const ticketsList = tickets.split(",");
+    const ticketsList = tickets.split(',');
     const stringToRemove = updateColTickets(ticketsList, ticketId);
-    const columnTicket = tickets.replace(stringToRemove, "");
+    const columnTicket = tickets.replace(stringToRemove, '');
     set(
       ref(database, `data/${sessionId}/columns/${columnId}/tickets`),
       columnTicket
@@ -117,12 +128,12 @@ export const AppContextProvider = (props) => {
     const startColTickets = columns[startCol]?.tickets;
     const endColTickets = columns[endCol]?.tickets;
 
-    const ticketsList = startColTickets.split(",");
+    const ticketsList = startColTickets.split(',');
     const stringToRemove = updateColTickets(ticketsList, ticketId);
 
     const newColumns = { ...columns };
 
-    newColumns[startCol].tickets = startColTickets.replace(stringToRemove, "");
+    newColumns[startCol].tickets = startColTickets.replace(stringToRemove, '');
     newColumns[endCol].tickets = endColTickets
       ? `${endColTickets},${ticketId}`
       : ticketId;
@@ -137,12 +148,13 @@ export const AppContextProvider = (props) => {
         tickets,
         sessionId,
         addTicket,
+        editTicket,
         removeTicket,
         changeColumn,
         newSession,
         removeSessionId,
         createSessionId,
-        loading
+        loading,
       }}
     >
       {props.children}

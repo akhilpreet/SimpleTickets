@@ -1,19 +1,19 @@
-import { useContext } from "react";
-import AppContext from "../context/appContext";
-import AddTicketForm from "./AddTicketForm";
-import Ticket from "./Ticket";
+import { useContext } from 'react';
+import AppContext from '../context/appContext';
+import AddTicketForm from './AddTicketForm';
+import Ticket from './Ticket';
 
 const Column = ({ columnId, columnTitle, tickets }) => {
   const context = useContext(AppContext);
-  const ticketsList = tickets && tickets?.toString().split(",");
+  const ticketsList = tickets && tickets?.toString().split(',');
 
   const handleDragOver = (e) => {
     e.preventDefault();
   };
 
   const handleDrop = (e) => {
-    const ticketId = e.dataTransfer.getData("ticketId");
-    const startColumn = e.dataTransfer.getData("startColumn");
+    const ticketId = e.dataTransfer.getData('ticketId');
+    const startColumn = e.dataTransfer.getData('startColumn');
     if (startColumn === columnId) {
       return;
     }
